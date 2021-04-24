@@ -4,7 +4,7 @@ class MazeByMakingWall
   PATH = 0
   WALL = 1
 
-  def initialize(w, h)
+  def initialize(w = 31, h = 31)
     @w = w
     @h = h
     @maze = []
@@ -33,7 +33,12 @@ class MazeByMakingWall
     maze[w - 2][h - 2] = "Ｇ"
   end
 
-  def make_maze
+  def make_maze(demo = false)
+    @demo = demo
+    if @demo
+      clear_screen
+      print_maze
+    end
     @lst_candidate.shuffle!
     while !@lst_candidate.empty?
       sx, sy = @lst_candidate.pop
@@ -61,6 +66,7 @@ class MazeByMakingWall
     end
     if !lst_direction.empty?
       @maze[x][y] = WALL
+      print_maze if @demo
       @lst_current << [x, y]
       direction = lst_direction.sample
       continue_make_wall = false
@@ -68,7 +74,9 @@ class MazeByMakingWall
       when 0
         continue_make_wall = @maze[x][y - 2] == PATH
         @maze[x][y - 1] = WALL
+        print_maze if @demo
         @maze[x][y - 2] = WALL
+        print_maze if @demo
         @lst_current << [x, y - 2]
         if continue_make_wall
           extend_wall(x, y - 2)
@@ -76,7 +84,9 @@ class MazeByMakingWall
       when 1
         continue_make_wall = @maze[x + 2][y] == PATH
         @maze[x + 1][y] = WALL
+        print_maze if @demo
         @maze[x + 2][y] = WALL
+        print_maze if @demo
         @lst_current << [x + 2, y]
         if continue_make_wall
           extend_wall(x + 2, y)
@@ -84,7 +94,9 @@ class MazeByMakingWall
       when 2
         continue_make_wall = @maze[x][y + 2] == PATH
         @maze[x][y + 1] = WALL
+        print_maze if @demo
         @maze[x][y + 2] = WALL
+        print_maze if @demo
         @lst_current << [x, y + 2]
         if continue_make_wall
           extend_wall(x, y + 2)
@@ -92,7 +104,9 @@ class MazeByMakingWall
       when 3
         continue_make_wall = @maze[x - 2][y] == PATH
         @maze[x - 1][y] = WALL
+        print_maze if @demo
         @maze[x - 2][y] = WALL
+        print_maze if @demo
         @lst_current << [x - 2, y]
         if continue_make_wall
           extend_wall(x - 2, y)
@@ -105,6 +119,7 @@ class MazeByMakingWall
   end
 
   def print_maze
+    print "\033[0;0H"
     @maze.each do |row|
       line = row.map do |cell|
         case cell
@@ -119,8 +134,11 @@ class MazeByMakingWall
       puts line.join
     end
   end
+
+  def clear_screen
+    print "\e[H\e[2J"
+  end
 end
 
 maze = MazeByMakingWall.new(51, 51)
-maze.make_maze
-maze.print_maze
+maze.make_maze(true)
